@@ -11,7 +11,7 @@ test:
 libraries: $(SMOOSH)
 	$(SMOOSH) make/lib.json
 	cat ./build/bean.js > build/lib.js
-	cat ./build/underscore.js >> build/lib.js
+	#cat ./build/underscore.js >> build/lib.js EspoCRM
 	cat ./build/bean.min.js > build/lib.min.js
 	echo ";" >> build/lib.min.js
 	cat ./build/underscore.min.js >> build/lib.min.js
