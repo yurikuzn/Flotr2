@@ -123,6 +123,11 @@ Flotr.addPlugin('hit', {
         );
       }
       D.hide(this.mouseTrack);
+      // EspoCRM fix start
+      if (this.options && this.options.mouse && this.options.mouse.cursorPointer) {
+        $(this.el).css('cursor', '');
+      }
+      // EspoCRM fix end
       this.prevHit = null;
     }
     octx.restore();
@@ -282,9 +287,9 @@ Flotr.addPlugin('hit', {
   drawMouseTrack : function (n) {
 
     var
-      pos         = '', 
+      pos         = '',
       s           = n.series,
-      p           = n.mouse.position, 
+      p           = n.mouse.position,
       m           = n.mouse.margin,
       x           = n.x,
       y           = n.y,
@@ -323,10 +328,23 @@ Flotr.addPlugin('hit', {
     });
     if (_.isNull(content) || _.isUndefined(content)) {
       D.hide(mouseTrack);
+
+      // EspoCRM fix start
+      if (this.options && this.options.mouse && this.options.mouse.cursorPointer) {
+        $(this.el).css('cursor', '');
+      }
+      // EspoCRM fix end
+
       return;
     } else {
       mouseTrack.innerHTML = content;
       D.show(mouseTrack);
+
+      // EspoCRM fix start
+      if (this.options && this.options.mouse && this.options.mouse.cursorPointer) {
+        $(this.el).css('cursor', 'pointer');
+      }
+      // EspoCRM fix end
     }
 
     // Positioning
@@ -355,14 +373,73 @@ Flotr.addPlugin('hit', {
           x: (this.plotWidth)/2,
           y: (this.plotHeight)/2
         },
-        radius = (Math.min(this.canvasWidth, this.canvasHeight) * s.pie.sizeRatio) / 2,
+        radius = (Math.min(this.canvasWidth, this.canvasHeight) * s.pie.sizeRatio), // EspoCRM fix line
         bisection = n.sAngle<n.eAngle ? (n.sAngle + n.eAngle) / 2: (n.sAngle + n.eAngle + 2* Math.PI) / 2;
-      
+
       pos += 'bottom:' + (m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight) + 'px;top:auto;';
       pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
 
     // Default
     } else {
+
+      // EspoCRM fix start
+      if (n.mouse.autoPositionHorizontal) {
+
+        if (n.xaxis.d2p(n.x) > this.plotWidth * 2 / 3) {
+          p = 'w';
+        } else {
+          p = 'e';
+        }
+
+        if (n.x < 0) {
+          if (n.xaxis.d2p(n.x) < this.plotWidth * 1 / 4) {
+            p = 'e';
+          } else {
+            p = 'w';
+          }
+        }
+      }
+      if (n.mouse.autoPositionVertical) {
+        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * 3 / 4) {
+          p = 's';
+        } else {
+          p = 'n';
+        }
+
+        if (n.y < 0 && this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * 1 / 4) {
+          p = 's';
+        }
+
+        if (this.plotWidth - n.xaxis.d2p(n.x) < 42) {
+          p += 'w;'
+        }
+      }
+      if (n.mouse.autoPositionVerticalHalf) {
+        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight / 2) {
+          p = 's';
+        } else {
+          p = 'n';
+        }
+        if (n.xaxis.d2p(n.x) > this.plotWidth * 2 / 3) {
+          p += 'w';
+        } else {
+          p += 'e';
+        }
+      }
+      if (n.mouse.autoPositionHorizontalHalf) {
+        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * 3 / 4) {
+          p = 's';
+        } else {
+          p = 'n';
+        }
+        if (n.xaxis.d2p(n.x) > this.plotWidth / 2) {
+          p += 'w';
+        } else {
+          p += 'e';
+        }
+      }
+      // EspoCRM fix end
+
       pos += 'top:';
       if (/n/.test(p)) pos += (oTop - m + top + n.yaxis.d2p(n.y) - size.height);
       else             pos += (oTop + m + top + n.yaxis.d2p(n.y));

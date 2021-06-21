@@ -17,9 +17,9 @@ Text.prototype = {
   dimensions : function (text, canvasStyle, htmlStyle, className) {
 
     if (!text) return { width : 0, height : 0 };
-    
+
     return (this.o.html) ?
-      this.html(text, this.o.element, htmlStyle, className) : 
+      this.html(text, this.o.element, htmlStyle, className) :
       this.canvas(text, canvasStyle);
   },
 
@@ -52,6 +52,7 @@ Text.prototype = {
     var div = D.create('div');
 
     D.setStyles(div, { 'position' : 'absolute', 'top' : '-10000px' });
+    D.setStyles(div, {'top' : '0px', 'left' : '-10000px' }); // EspoCRM fix line
     D.insert(div, '<div style="'+style+'" class="'+className+' flotr-dummy-div">' + text + '</div>');
     D.insert(this.o.element, div);
 

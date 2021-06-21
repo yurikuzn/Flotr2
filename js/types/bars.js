@@ -15,7 +15,7 @@ Flotr.addType('bars', {
     grouped: false         // => groups bars together which share x value, hit not supported.
   },
 
-  stack : { 
+  stack : {
     positive : [],
     negative : [],
     _positive : [], // Shadow
@@ -34,7 +34,7 @@ Flotr.addType('bars', {
     context.lineWidth = options.lineWidth;
     context.strokeStyle = options.color;
     if (options.fill) context.fillStyle = options.fillStyle;
-    
+
     this.plot(options);
 
     context.restore();
@@ -54,7 +54,7 @@ Flotr.addType('bars', {
 
     for (i = 0; i < data.length; i++) {
 
-      geometry = this.getBarGeometry(data[i][0], data[i][1], options);
+      geometry = this.getBarGeometry(data[i][0], data[i][1], options, true); // EspoCRM fix stacked
       if (geometry === null) continue;
 
       left    = geometry.left;
@@ -82,7 +82,7 @@ Flotr.addType('bars', {
     }
   },
 
-  getBarGeometry : function (x, y, options) {
+  getBarGeometry : function (x, y, options, fillStack) { // EspoCRM fix stacked
 
     var
       horizontal    = options.horizontal,
@@ -110,6 +110,20 @@ Flotr.addType('bars', {
     if (stack) {
       stackValue          = yValue > 0 ? stack.positive : stack.negative;
       stackOffset         = stackValue[xValue] || stackOffset;
+
+      // EspoCRM fix stacked start
+      if (fillStack) {
+        this.stackData = this.stackData || {};
+        this.stackData[options.index] = this.stackData[options.index] || {};
+        this.stackData[options.index][xValue] = stackOffset;
+      } else {
+        if (this.stackData && Math.round(xValue) == xValue) {
+            stackOffset = this.stackData[options.index][xValue];
+          }
+      }
+      // EspoCRM fix stacked end
+
+      if (fillStack) // EspoCRM fix stacked
       stackValue[xValue]  = stackOffset + yValue;
     }
 
@@ -125,6 +139,7 @@ Flotr.addType('bars', {
     // if (right < xa.min || left > xa.max || top < ya.min || bottom > ya.max) continue;
 
     return (x === null || y === null) ? null : {
+      bottom: bottom, // EspoCRM fix stacked
       x         : xValue,
       y         : yValue,
       xScale    : xScale,
@@ -156,6 +171,20 @@ Flotr.addType('bars', {
         // Height:
         (
           // Positive Bars:
+          // EspoCRM fix stacked start
+          (
+            (
+              options.stacked && !options.horizontal &&
+              hitGeometry.yScale(hitGeometry.y) < geometry.bottom &&
+              hitGeometry.yScale(hitGeometry.y) > geometry.top
+            ) ||
+            (
+              options.stacked && options.horizontal &&
+              hitGeometry.yScale(hitGeometry.y) > geometry.bottom &&
+              hitGeometry.yScale(hitGeometry.y) < geometry.top
+            )
+          ) || !options.stacked &&
+          // EspoCRM fix stacked end
           (height > 0 && height < geometry.y) ||
           // Negative Bars:
           (height < 0 && height > geometry.y)
@@ -165,6 +194,19 @@ Flotr.addType('bars', {
       ) {
         n.x = data[i][0];
         n.y = data[i][1];
+
+        // EspoCRM fix stacked start
+        if (options.stacked) {
+          if (!options.horizontal) {
+            n.y = options.yInverse(geometry.top);
+            n.bottom = geometry.bottom;
+          } else {
+            n.x = options.xInverse(geometry.top);
+            n.bottom = geometry.bottom;
+          }
+        }
+        // EspoCRM fix stacked end
+
         n.index = i;
         n.seriesIndex = options.index;
       }
@@ -190,9 +232,26 @@ Flotr.addType('bars', {
     // Draw highlight
     context.beginPath();
     context.moveTo(left, top + height);
+
+    // EspoCRM fix stacked start
+    if (options.stacked) {
+      context.moveTo(left, options.args.bottom);
+    }
+    // EspoCRM fix stacked end
+
     context.lineTo(left, top);
     context.lineTo(left + width, top);
+
+    if (!options.stacked) // EspoCRM fix stacked
     context.lineTo(left + width, top + height);
+
+    // EspoCRM fix stacked start
+    if (options.stacked) {
+      context.lineTo(left + width, options.args.bottom);
+      context.lineTo(left, options.args.bottom);
+    }
+    // EspoCRM fix stacked end
+
     if (options.fill) {
       context.fillStyle = options.fillStyle;
       context.fill();
@@ -239,7 +298,7 @@ Flotr.addType('bars', {
     var
       max = axis.options.max;
 
-    if (_.isNumber(max) || _.isString(max)) return; 
+    if (_.isNumber(max) || _.isString(max)) return;
 
     var
       newmin = axis.min,
@@ -258,7 +317,7 @@ Flotr.addType('bars', {
       }
     }
 
-    if (options.stacked && 
+    if (options.stacked &&
         ((orientation == 1 && horizontal) || (orientation == -1 && !horizontal))){
 
       for (j = data.length; j--;) {
