@@ -3,7 +3,7 @@ SMOOSH = ./node_modules/.bin/smoosh
 all: test flotr2
 
 $(SMOOSH):
-	npm install
+	npm ci
 
 test:
 	cd spec; jasmine-headless-webkit -j jasmine.yml -c
