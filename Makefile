@@ -12,21 +12,21 @@ libraries: $(SMOOSH)
 	$(SMOOSH) make/lib.json
 	cat ./build/bean.js > build/lib.js
 	#cat ./build/underscore.js >> build/lib.js EspoCRM
-	cat ./build/bean.min.js > build/lib.min.js
-	echo ";" >> build/lib.min.js
-	cat ./build/underscore.min.js >> build/lib.min.js
-	echo ";" >> build/lib.min.js
+	#cat ./build/bean.min.js > build/lib.min.js
+	#echo ";" >> build/lib.min.js
+	#cat ./build/underscore.min.js >> build/lib.min.js
+	#echo ";" >> build/lib.min.js
 
-ie: $(SMOOSH)
-	$(SMOOSH) make/ie.json
+#ie: $(SMOOSH)
+#	$(SMOOSH) make/ie.json
 
-flotr2: libraries ie $(SMOOSH)
+flotr2: libraries $(SMOOSH)
 	$(SMOOSH) make/flotr2.json
 	cat build/lib.js build/flotr2.js > flotr2.js
-	cat build/lib.min.js > flotr2.min.js
-	cat build/flotr2.min.js >> flotr2.min.js
-	echo ';' >> flotr2.min.js
-	cp build/ie.min.js flotr2.ie.min.js
+#	cat build/lib.min.js > flotr2.min.js
+#	cat build/flotr2.min.js >> flotr2.min.js
+#	echo ';' >> flotr2.min.js
+#	cp build/ie.min.js flotr2.ie.min.js
 	cat build/flotr2.js > flotr2.nolibs.js
 
 flotr2-basic: libraries ie $(SMOOSH)
