@@ -379,6 +379,17 @@ Flotr.addPlugin('hit', {
       pos += 'bottom:' + (m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight) + 'px;top:auto;';
       pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
 
+      // EspoCRM fix start
+      let bottom = m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight;
+
+      if (bottom > this.canvasHeight * 0.5 + this.canvasHeight * 0.25) {
+          bottom -= 20;
+
+          pos = 'bottom:' + bottom + 'px;top:auto;';
+          pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
+      }
+      // EspoCRM fix end
+
     // Default
     } else {
 
