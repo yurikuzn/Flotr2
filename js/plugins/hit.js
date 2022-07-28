@@ -380,7 +380,7 @@ Flotr.addPlugin('hit', {
       pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
 
       // EspoCRM fix start
-      let bottom = m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight;
+      var bottom = m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight;
 
       if (bottom > this.canvasHeight * 0.5 + this.canvasHeight * 0.25) {
           bottom -= 20;
