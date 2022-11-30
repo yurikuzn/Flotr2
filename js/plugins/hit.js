@@ -411,7 +411,9 @@ Flotr.addPlugin('hit', {
         }
       }
       if (n.mouse.autoPositionVertical) {
-        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * 3 / 4) {
+        var verticalRatio = size && size.height > 42 ? (7 / 10) : (3 / 4);
+
+        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * verticalRatio) {
           p = 's';
         } else {
           p = 'n';
