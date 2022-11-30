@@ -4738,6 +4738,17 @@ Flotr.addPlugin('hit', {
       pos += 'bottom:' + (m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight) + 'px;top:auto;';
       pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
 
+      // EspoCRM fix start
+      var bottom = m - top - center.y - Math.sin(bisection) * radius/2 + this.canvasHeight;
+
+      if (bottom > this.canvasHeight * 0.5 + this.canvasHeight * 0.25) {
+          bottom -= 20;
+
+          pos = 'bottom:' + bottom + 'px;top:auto;';
+          pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
+      }
+      // EspoCRM fix end
+
     // Default
     } else {
 
@@ -4759,7 +4770,9 @@ Flotr.addPlugin('hit', {
         }
       }
       if (n.mouse.autoPositionVertical) {
-        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * 3 / 4) {
+        var verticalRatio = size && size.height > 42 ? (7 / 10) : (3 / 4);
+
+        if (this.plotHeight - n.yaxis.d2p(n.y) > this.plotHeight * verticalRatio) {
           p = 's';
         } else {
           p = 'n';
